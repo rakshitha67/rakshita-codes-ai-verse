@@ -15,7 +15,9 @@ const Contact = () => {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
@@ -28,13 +30,41 @@ const Contact = () => {
       return;
     }
 
-    // Simulate form submission
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for your message. I'll get back to you soon!",
-    });
-    
-    setFormData({ name: '', email: '', message: '' });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: '34c24a8d-1e21-4ab8-a2c8-bde0eaaf57f9',
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          subject: `New message from ${formData.name} - Portfolio Contact Form`,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message Sent!",
+          description: "Thank you for your message. I'll get back to you soon!",
+        });
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -192,9 +222,10 @@ const Contact = () => {
                   type="submit" 
                   className="w-full bg-primary hover:bg-primary/90 glow-effect"
                   size="lg"
+                  disabled={isSubmitting}
                 >
                   <Send className="h-5 w-5 mr-2" />
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </CardContent>
