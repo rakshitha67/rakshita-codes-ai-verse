@@ -155,6 +155,6 @@ All colors MUST be HSL.
   .project-card {
     @apply p-6 rounded-2xl border bg-card/80 backdrop-blur-md transition-all duration-500;
     @apply hover:scale-[1.02] hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20;
-    @apply group cursor-pointer overflow-hidden;
+    @apply cursor-pointer overflow-hidden;
   }
 }
